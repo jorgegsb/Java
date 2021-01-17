@@ -1,0 +1,409 @@
+
+//clase excepcion
+package RuletaExcepcion;
+
+
+public class Excepcion extends Exception {
+   int error;
+
+    public Excepcion(int error) {
+        super();
+        this.error= error;
+        
+        
+    }
+
+    @Override
+    public String getMessage() {
+         String mensaje=" ";
+        switch (error)
+        {
+            case 701:
+                mensaje=mensaje.concat("La letra no se encuentra en el panel.");
+                break;
+            case 702:
+                mensaje=mensaje.concat("No metas números");
+                break;
+            case 703:
+                mensaje=mensaje.concat("Esa letra ya está dicha. ");
+                break;
+        }
+        return mensaje;
+    }
+}
+
+
+//Clase Jugador
+
+package ruleta;
+
+/**
+ *
+ * @author Jorge
+ */
+public class Jugador {
+
+    private int id;
+    private String nombre;
+    private int puntiacionumeros = 0;
+    double aleatorioo;
+    Puntuacion puntostotales = null;
+
+    public int getPuntiacionumeros() {
+        return puntiacionumeros;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setPuntiacionumeros(int puntiacionumeros) {
+        this.puntiacionumeros = puntiacionumeros;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public Jugador(int id, String nombre, int puntuacion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.puntiacionumeros = puntuacion;
+    }
+
+    public void MostrarPuntuacion() {
+
+        System.out.println("Tu puntuacion es: " + getPuntiacionumeros());
+
+    }
+
+    public double getAleatorioo() {
+        return aleatorioo;
+    }
+
+    public void setAleatorioo(double aleatorioo) {
+        this.aleatorioo = aleatorioo;
+    }
+
+    public double seleccionpuntos() {
+        aleatorioo = Math.round(Math.random() * 6);
+        return aleatorioo;
+    }
+
+    public void EstablecePuntuacion() {
+        setPuntiacionumeros(puntiacionumeros + 10);
+
+        if (seleccionpuntos() == 1.0) {
+            puntostotales = Puntuacion.DOBLE;
+
+        } else if (seleccionpuntos() == 2.0) {
+            puntostotales = Puntuacion.MITAD;
+        } else if (seleccionpuntos() == 3.0) {
+
+            puntostotales = Puntuacion.PIERDETURNO;
+
+        } else if (seleccionpuntos() == 4.0) {
+            puntostotales = Puntuacion.X1;
+
+        } else if (seleccionpuntos() == 5.0) {
+
+            puntostotales = Puntuacion.X10;
+        } else if (seleccionpuntos() == 6.0) {
+            puntostotales = Puntuacion.X5;
+
+        } else if (seleccionpuntos() == 0.0) {
+            puntostotales = Puntuacion.X100;
+        } else {
+            System.out.println("Error de puntuación");
+        }
+
+        switch (puntostotales) {
+            case DOBLE:
+                System.out.println("Duplicas los puntos");
+                setPuntiacionumeros(puntiacionumeros * 2);
+                break;
+            case MITAD:
+                System.out.println("Pierdes la mitad de puntos");
+                setPuntiacionumeros(puntiacionumeros / 2);
+                break;
+            case X5:
+                System.out.println("Quintuplicas los puntos");
+                setPuntiacionumeros(puntiacionumeros * 5);
+                break;
+            case PIERDETURNO:
+                System.out.println("Pierdes el turno");
+                break;
+            case X10:
+                System.out.println("Multiplicas por 10 tus puntos");
+                setPuntiacionumeros(puntiacionumeros * 10);
+                break;
+            case X1:
+                System.out.println("Te quedas igual con tus puntos");
+                break;
+            case X100:
+                System.out.println("Ehorabuena estas forrado");
+                setPuntiacionumeros(puntiacionumeros * 100);
+        }
+
+    }
+
+}
+
+enum Puntuacion {
+
+    DOBLE, MITAD, X5, PIERDETURNO, X10, X1, X100;
+
+}
+
+//partida
+package ruleta;
+
+import RuletaExcepcion.Excepcion;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Jorge
+ */
+public class Partida {
+
+    private StringBuilder panel = new StringBuilder();
+    private String palabraEscondida;
+    private StringBuilder letrasFalladas;
+    private int numeroIntentos;
+
+    public StringBuilder getPanel() {
+        return panel;
+    }
+
+    public String getPalabraEscondida() {
+        return palabraEscondida;
+    }
+
+    public StringBuilder getLetrasFalladas() {
+        return letrasFalladas;
+    }
+
+    public int getNumeroIntentos() {
+        return numeroIntentos;
+    }
+
+    public ArrayList<Jugador> getJugadores() {
+        return jugadores;
+    }
+
+    public Jugador getTurno() {
+        return turno;
+    }
+    public ArrayList<Jugador> jugadores = new ArrayList();
+    private Jugador turno;
+
+    Partida() {
+    }
+
+    void cambiarturno(int i, Partida p) {
+
+        turno = jugadores.get(i);
+       
+        int pos = 0;
+        int terminado = 0;
+        while (this.ganador() != (-1)) {
+
+            for (int j = 0; j < this.getJugadores().size(); j++) {
+                System.out.println("Es el turno de jugador " + this.jugadores.get(j).getNombre());
+                ruletacion();
+                if (j == (this.jugadores.size())) {
+                    j = 0;
+                }
+            }
+        }
+        System.out.println("Enhorabuena " + this.turno.getNombre() + " has terminado");
+    }
+
+    int ganador() {
+        int pos = 0;
+        pos = this.panel.indexOf("_");
+        return pos;
+    }
+
+    void inicializarPartida() {
+
+        Scanner teclado = new Scanner(System.in);
+        System.out.println("¿Cuantos jugadores participan?");
+        int n = teclado.nextInt();
+        for (int i = 0; i < n; i++) {
+            System.out.println("¿Cómo se llama el jugador " + i + " ?");
+            String nom = teclado.next();
+            Jugador j = new Jugador(i+1, nom, 0);
+            jugadores.add(j);
+        }
+        turno = jugadores.get(0);
+        //Mostramos la palabra aleatoriamente
+        palabraEscondida = MostrarPeliculas();
+        int j = 0;
+        while ((j <= palabraEscondida.length())) {
+            int k = palabraEscondida.indexOf(" ", j);
+            for (int i = j; i < k; i++) {
+                panel.append("_");
+                j++;
+            }
+            panel.append(" ");
+            j++;
+        }
+        System.out.println(panel);
+    }
+
+    int panelcompleto() {
+
+        int variable = 0;
+        variable = panel.indexOf("_");
+        return variable;
+
+    }
+
+    void ruletacion() {
+        Scanner teclado = new Scanner(System.in);
+        int controlador = 0;
+        int terminado = 0;
+
+        try {
+            do {//se ejecuta el las puntuaciones
+                 turno.EstablecePuntuacion();
+                 turno.MostrarPuntuacion();
+                System.out.println("¿Que letra quieres seleccionar?");
+                String letra = teclado.next();
+                int j = 0;
+                controlador = palabraEscondida.indexOf(letra, j);
+                int k = palabraEscondida.indexOf(letra, j);
+
+                if (isNumeric(letra) == true) {
+                    throw new Excepcion(702);
+                } else if (panel.indexOf(letra) != -1) {
+                    throw new Excepcion(703);
+                } else if (palabraEscondida.indexOf(letra) == -1) {
+                    throw new Excepcion(701);
+                } else {
+                    if ((k) != (-1)) {
+                        
+                        do {
+                            k = palabraEscondida.indexOf(letra, j);
+                            for (int q = j; q < k; q++) {
+                                panel.replace(k, k + 1, letra);
+                                j++;
+                            }
+                            j++;
+                        } while (j <= palabraEscondida.length());
+                    }
+                    System.out.println(panel);
+                    terminado = panel.indexOf("_");
+                }
+            } while ((terminado != -1) && (controlador != (-1)));
+        } catch (Excepcion e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private static boolean isNumeric(String cadena) {
+        try {
+            Integer.parseInt(cadena);
+            return true;
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+    }
+
+    String MostrarPeliculas() {
+        double aleatorio;
+        String palabra = null;
+        try {
+            //1ºcreamos una conexión
+            Connection myConexion = DriverManager.getConnection("jdbc:mysql://localhost:3306/filmoteca1", "root", "");
+
+            //2º crear objeto statement
+            Statement mistatement = myConexion.createStatement();
+            //creamos un numero aleatorio que al añadirlo a nuestra sentencia selecciona la pelicula de la base de datos
+            aleatorio = Math.round(Math.random() * 10);
+
+            //ejecutar la instruccion sql
+            ResultSet myresultset = mistatement.executeQuery("SELECT nombre from peliculasruleta where codigopelicula=" + aleatorio);
+
+            //4ºRecorrer el Resultset (tabla virtual almacenada en memoria con los datos recogidos en la consulta)
+            while (myresultset.next()) {
+                palabra = myresultset.getString("nombre");
+            }
+            //Mostramos por pantalla la palabra
+            System.out.println(palabra);
+            //devolvemos la palabra y utilizamos el metodo directamente en la palabra escondida
+            return palabra;
+
+        } catch (Exception e) {
+
+            System.out.println("error de conexion");
+            e.printStackTrace();
+
+        }
+
+        return palabra;
+    }
+
+}
+
+//clase ruleta
+
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ruleta;
+
+/**
+ *
+ * @author Jorge
+ */
+public class Ruleta {
+
+  
+    public static void main(String[] args) {
+       
+     Partida p=new Partida();
+    
+       p.inicializarPartida();
+       int completo=0; 
+       int i=0;
+       
+        do{
+            p.cambiarturno(i, p);
+            completo = p.ganador();
+        }while(completo!=(-1)); 
+       
+           
+       
+        
+     
+         
+    }
+       
+       
+       
+       
+       
+    }
+    
+
+
+
