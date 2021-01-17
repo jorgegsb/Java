@@ -1,0 +1,323 @@
+
+//clase alquiler de vehiculos
+package alquilerdevehiculos;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Jorge
+ */
+public class AlquilerDeVehiculos {
+
+   
+    public static void main(String[] args) {
+       
+        //APARTADO A
+        Camion Camion1= new Camion("234weq", true, 300);
+        Camion Camion2= new Camion("234weqewew", true, 300);
+        Camion Camion3= new Camion("234weqhtrgrg", false, 300);
+        Camion Camion4= new Camion("234weqasdasdasd", false, 300);
+        
+        Turismo Turismo1= new Turismo("wdasdqwdw", true, 50);
+        Turismo Turismo4= new Turismo("wdasdqwdwwqwdqw", true, 50);
+        Turismo Turismo3= new Turismo("wdasdqwdwsdasds", false, 50);
+        Turismo Turismo2= new Turismo("wdasdqwdwbdgfbdfb", false, 50);
+        
+        System.out.println(Camion.getNumCamAlquilados());//num Camiones alquilados
+        System.out.println(Camion.getNumCamiones());//Num camiones 
+                
+        System.out.println(Turismo.getNumTurismos());//num Turismos
+        System.out.println(Turismo.getNumTurismosAlquilados());//Num Turismos Alquilados
+        
+        
+        Camion1.ShowInfo();
+        Camion1.Alquiler(10);
+        Camion1.Devolver(30);
+        System.out.println(Camion.getNumCamAlquilados());// num de caminones despues de devolver
+        
+        
+        //APARTADO B
+        
+        
+        ArrayList <Vehiculos> listaVehiculos= new ArrayList();
+        
+        
+        
+        listaVehiculos.add(Camion4);
+        listaVehiculos.add(Camion3);
+        listaVehiculos.add(Camion2);
+        listaVehiculos.add(Camion1);
+        listaVehiculos.add(Turismo1);
+        listaVehiculos.add(Turismo2);
+        listaVehiculos.add(Turismo3);
+        listaVehiculos.add(Turismo4);
+        
+        
+        for(Vehiculos a: listaVehiculos){// he utilizado el metodo to String por que no consigo encontrar los metodos de mis clases Turismo y camión asi que he concadenado 2 to strings
+        
+            System.out.println(listaVehiculos.toString().toString());
+        
+        }
+        
+    }
+    
+}
+
+
+//Clase camion
+
+package alquilerdevehiculos;
+
+/**
+ *
+ * @author Jorge
+ */
+public class Camion extends Vehiculos {
+
+    @Override
+    public String toString() {
+        return "Camion{" + "precioDia=" + precioDia + ", diaAlquiler=" + diaAlquiler + ", diaDevoluci\u00f3n=" + diaDevolución + '}';
+    }
+
+    private double precioDia;
+    private int diaAlquiler;
+    private int diaDevolución;
+    private static int numCamiones;
+    private static int NumCamAlquilados;
+
+    public Camion(String matricula, boolean alquilado, double precioDia) {
+        super(matricula, alquilado);
+        this.precioDia=precioDia;
+        numCamiones++;
+        if (alquilado) {
+            NumCamAlquilados++;
+        }
+    }
+
+    @Override
+    void Alquiler(int diaAlquiler) {
+        this.diaAlquiler = diaAlquiler;
+        System.out.println("Has realizado un alquiler de Camiones el dia: "+getDiaAlquiler());
+    }
+
+    @Override
+    void Devolver(int diaDevolucion) {
+        this.diaDevolución=diaDevolucion;
+        int diadif= getDiaDevolución()-getDiaAlquiler();
+        double TotalaPagar=diadif*precioDia;
+        System.out.println("Lo has devuelto el dia: "+diaDevolucion);
+        System.out.println("por tanto, el total a pagar es :"+TotalaPagar+" €");
+        NumCamAlquilados--;  
+    }
+
+    @Override
+    void ShowInfo() {
+        System.out.println("Este Vehiculo es un Camión");//tipo vehiculo
+        System.out.println("La matricula es: "+getMatricula());
+        if (isAlquilado()) {//Si se ha alquilado o no
+            System.out.println("Camión  Alquilado");
+        } else {
+            System.out.println("Camión no alquilado");
+        }
+        System.out.println("El precio por dia es: "+getPrecioDia());//El precio por dia
+        
+        System.out.println("El Total de Camiones es: "+getNumCamiones());//EL Total de camiones
+        
+        System.out.println("El Total de camiones alquilados es: "+getNumCamAlquilados());//El total de alquileres de camiones
+
+    }
+
+    public double getPrecioDia() {
+        return precioDia;
+    }
+
+    public void setPrecioDia(double precioDia) {
+        this.precioDia = precioDia;
+    }
+
+    public int getDiaAlquiler() {
+        return diaAlquiler;
+    }
+
+    public void setDiaAlquiler(int diaAlquiler) {
+        this.diaAlquiler = diaAlquiler;
+    }
+
+    public int getDiaDevolución() {
+        return diaDevolución;
+    }
+
+    public void setDiaDevolución(int diaDevolución) {
+        this.diaDevolución = diaDevolución;
+    }
+
+    public static int getNumCamiones() {
+        return numCamiones;
+    }
+
+    public static void setNumCamiones(int numCamiones) {
+        Camion.numCamiones = numCamiones;
+    }
+
+    public static int getNumCamAlquilados() {
+        return NumCamAlquilados;
+    }
+
+    public static void setNumCamAlquilados(int NumCamAlquilados) {
+        Camion.NumCamAlquilados = NumCamAlquilados;
+    }
+
+}
+
+//clase Turismo
+
+package alquilerdevehiculos;
+
+/**
+ *
+ * @author Jorge
+ */
+public class Turismo extends Vehiculos {
+
+    @Override
+    public String toString() {
+        return "Turismo{" + "precioKM=" + precioKM + ", kmAlquiler=" + kmAlquiler + ", kmDevolucion=" + kmDevolucion + '}';
+    }
+
+    private double precioKM;
+    private int kmAlquiler;
+    private int kmDevolucion;
+    private static int numTurismos;
+    private static int numTurismosAlquilados;
+
+    public Turismo(String matricula, boolean alquilado, double precioKM) {
+        super(matricula, alquilado);
+        this.precioKM = precioKM;
+        numTurismos++;
+        if (alquilado) {
+            numTurismosAlquilados++;
+        }
+    }
+
+    @Override
+    void Alquiler(int kmAlquiler) {
+        this.kmAlquiler = kmAlquiler;
+        System.out.println("Has realizado un alquiler de Turismo con :" + getKmAlquiler() + " KM");
+    }
+
+    @Override
+    void Devolver(int kmDevolucion) {
+        this.kmDevolucion = kmDevolucion;
+        int kmDif = getKmDevolucion() - getKmAlquiler();
+        double TotalAPagar = kmDif * getPrecioKM();
+        System.out.println("El total a pagar es: " + TotalAPagar+ "€");
+        numTurismosAlquilados--;
+
+    }
+
+    @Override
+    void ShowInfo() {
+        System.out.println("Este es un vehículo tipo: Turismo");//tipo de vehiculo
+        System.out.println("con matrícula: " + getMatricula());//matricula
+        if (isAlquilado()) {//si esta alquilado o no lo esta
+            System.out.println("Turismo alquilado");
+        } else {
+            System.out.println("Turismo no Alquilado");
+        }
+        System.out.println("El precio por KM es: " + getPrecioKM());//El precio por KM
+
+        System.out.println("La cantidad de Turismos que hay son: " + getNumTurismos());// totalTurismos
+
+        System.out.println("La cantidad de Turismos que actualmente estan alquilados son: " + getNumTurismosAlquilados());//Total alquilados
+
+    }
+
+    public double getPrecioKM() {
+        return precioKM;
+    }
+
+    public void setPrecioKM(double precioKM) {
+        this.precioKM = precioKM;
+    }
+
+    public int getKmAlquiler() {
+        return kmAlquiler;
+    }
+
+    public void setKmAlquiler(int kmAlquiler) {
+        this.kmAlquiler = kmAlquiler;
+    }
+
+    public int getKmDevolucion() {
+        return kmDevolucion;
+    }
+
+    public void setKmDevolucion(int kmDevolucion) {
+        this.kmDevolucion = kmDevolucion;
+    }
+
+    public static int getNumTurismos() {
+        return numTurismos;
+    }
+
+    public static void setNumTurismos(int numTurismos) {
+        Turismo.numTurismos = numTurismos;
+    }
+
+    public static int getNumTurismosAlquilados() {
+        return numTurismosAlquilados;
+    }
+
+    public static void setNumTurismosAlquilados(int numTurismosAlquilados) {
+        Turismo.numTurismosAlquilados = numTurismosAlquilados;
+    }
+
+}
+
+
+//clase vehiculos
+
+package alquilerdevehiculos;
+
+/**
+ *
+ * @author Jorge
+ */
+public abstract class Vehiculos {
+
+    private String matricula;
+
+  
+    private boolean alquilado;
+
+    abstract void Alquiler(int a);
+
+    abstract void Devolver(int b);
+
+    abstract void ShowInfo();
+
+    public Vehiculos(String matricula, boolean alquilado) {
+        this.matricula = matricula;
+        this.alquilado = alquilado;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public boolean isAlquilado() {
+        return alquilado;
+    }
+
+    public void setAlquilado(boolean alquilado) {
+        this.alquilado = alquilado;
+    }
+
+    
+    
+    
